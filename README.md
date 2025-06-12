@@ -93,7 +93,6 @@ You can update users in `auth.py` with your own hashed passwords.
 * Chat memory support included
 
 ## Directory Structure
-
 .
 ├── app.py              # Main Streamlit app
 ├── auth.py             # Login & roles
@@ -107,8 +106,6 @@ You can update users in `auth.py` with your own hashed passwords.
 ├── gcp_key.json        # GCP service account key (not committed)
 ├── requirements.txt    # Python dependencies
 └── .streamlit/secrets.toml # (if using Streamlit secrets)
-```
-
 
 #Deployment Options
 
