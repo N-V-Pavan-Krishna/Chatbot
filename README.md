@@ -95,16 +95,27 @@ You can update users in `auth.py` with your own hashed passwords.
 ## Directory Structure
 .
 ├── app.py              # Main Streamlit app
+
 ├── auth.py             # Login & roles
+
 ├── admin.py            # Admin chat logs view
+
 ├── upload.py           # PDF upload handler
+
 ├── firebase.py         # Firestore logging
+
 ├── filters.py          # Semantic search tools
+
 ├── chains.py           # Gemini + Retriever QA chain
+
 ├── memory.py           # LangChain memory store
+
 ├── vector.py           # ChromaDB vector store setup
+
 ├── gcp_key.json        # GCP service account key (not committed)
+
 ├── requirements.txt    # Python dependencies
+
 └── .streamlit/secrets.toml # (if using Streamlit secrets)
 
 #Deployment Options
