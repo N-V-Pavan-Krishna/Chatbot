@@ -1,0 +1,10 @@
+streamlit
+firebase-admin
+requests
+transformers
+torch
+langchain
+chromadb
+PyMuPDF
+langchain-google-vertexai
+sentence-transformers
