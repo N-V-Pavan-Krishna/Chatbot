@@ -1,16 +1,15 @@
-# 💬 Hybrid Chatbot with Vertex AI + ChromaDB + Streamlit
+# Hybrid Chatbot with Vertex AI + ChromaDB + Streamlit
 
 This project is a **Google Services Support Chatbot** that uses:
 
-* 🧠 **Vertex AI Gemini** for fallback LLM
-* 📚 **ChromaDB** for storing and retrieving knowledge base embeddings
-* 🔐 **Streamlit Authenticator** for login with role-based views
-* 🔥 **Firebase Firestore** for chat logging
-* 📄 **PDF Uploading** to ingest content into the knowledge base
+* **Vertex AI Gemini** for fallback LLM
+* **ChromaDB** for storing and retrieving knowledge base embeddings
+* **Streamlit Authenticator** for login with role-based views
+* **Firebase Firestore** for chat logging
+* **PDF Uploading** to ingest content into the knowledge base
 
 ---
-
-## ✅ Prerequisites
+## Prerequisites
 
 1. **Google Cloud Project**
 
@@ -23,28 +22,28 @@ This project is a **Google Services Support Chatbot** that uses:
 
 ---
 
-## 🧪 Setup Instructions
+## Setup Instructions
 
-### 1. 🔧 Clone the Project
+### 1.Clone the Project
 
 ```bash
 cd hybrid_chatbot_KB
 ```
 
-### 2. 📦 Create and Activate Virtual Environment
+## 2.Create and Activate Virtual Environment
 
 ```bash
 python -m venv venv
 venv\Scripts\activate  # For Windows
 ```
 
-### 3. 📥 Install Requirements
+## 3.Install Requirements
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. 🔑 Add Your GCP Service Account Key
+## 4.Add Your GCP Service Account Key
 
 Save your downloaded JSON as:
 
@@ -52,7 +51,7 @@ Save your downloaded JSON as:
 gcp_key.json
 ```
 
-### 5. 🌍 Set Environment Variable (every time you start)
+## 5.Set Environment Variable (every time you start)
 
 **For PowerShell:**
 
@@ -70,15 +69,13 @@ Or use `run_chatbot.bat` to automate it.
 
 ---
 
-## 🚀 Running the App
+## Running the App
 
 ```bash
 streamlit run app.py
 ```
 
----
-
-## 🔐 Login Details (Default)
+## Login Details (Default)
 
 | Username | Password  | Role  |
 | -------- | --------- | ----- |
@@ -87,9 +84,7 @@ streamlit run app.py
 
 You can update users in `auth.py` with your own hashed passwords.
 
----
-
-## 🧩 Features
+## Features
 
 * Ask questions about uploaded PDFs or Gemini fallback
 * Upload PDFs → processed via `upload.py`
@@ -97,11 +92,7 @@ You can update users in `auth.py` with your own hashed passwords.
 * Filter KB via semantic vector search
 * Chat memory support included
 
----
-
-## 🛠 Directory Structure
-
-```
+## Directory Structure
 .
 ├── app.py              # Main Streamlit app
 ├── auth.py             # Login & roles
@@ -117,15 +108,7 @@ You can update users in `auth.py` with your own hashed passwords.
 └── .streamlit/secrets.toml # (if using Streamlit secrets)
 ```
 
----
+#Deployment Options
 
-## ✅ Deployment Options
-
-* ✅ Run locally via VS Code or terminal
-* ☁️ Deploy to Google Cloud Run, App Engine, or Vertex AI Workbench with some tweaks
-
----
-
-## 📞 Contact
-
-Built and maintained by your AI assistant. Let me know if you want to package it for production or scale with Docker + GKE.
+* Run locally via VS Code or terminal
+* Deploy to Google Cloud Run, App Engine, or Vertex AI Workbench with some tweaks
