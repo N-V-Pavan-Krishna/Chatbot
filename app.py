@@ -1,63 +1,90 @@
-# app.py
-
 import os
 import streamlit as st
 import sys
 import types
-import torch
 
-from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.llms import HuggingFacePipeline
-from transformers import pipeline
+from auth import login
+from chains import build_qa_chain
+from memory import memory
+from firebase import save_chat
+from admin import admin_view
+from upload import upload_pdfs
+from filters import semantic_filter
 
-# Monkey patching torch to avoid Streamlit inspect issues
 sys.modules["torch.classes"] = types.ModuleType("torch.classes")
 sys.modules["torch.classes"].__path__ = []
 sys.modules["torch.__path__"] = None
 
-os.environ["STREAMLIT_DISABLE_TELEMETRY"] = "1"
 os.environ["XDG_CACHE_HOME"] = "/tmp"
 os.environ["XDG_CONFIG_HOME"] = "/tmp"
-
-# UI setup
 st.set_page_config(page_title="Hybrid Chatbot", layout="wide")
-st.title("💬 Google Services Support Chatbot")
 
-query = st.text_input("Ask a question about Gemini or Google services:")
-THRESHOLD = 0.75
+authenticator, name, auth_status, username, role = login()
 
-@st.cache_resource
-def load_vectorstore():
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    return FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
+if auth_status:
+    authenticator.logout("Logout", location="sidebar")
+    st.title(f"💬 Welcome, {name}!")
 
-@st.cache_resource
-def load_llm():
-    pipe = pipeline("text2text-generation", model="google/flan-t5-small", max_new_tokens=256)
-    return HuggingFacePipeline(pipeline=pipe)
+    qa_chain = build_qa_chain()
+    query = st.chat_input("Ask a question about Gemini or Google services:")
 
-# Load KB
-vectordb = load_vectorstore()
+    with st.expander("🧠 Conversation Memory"):
+        for msg in memory.chat_memory.messages:
+            role_display = "👤 You" if msg.type == "human" else "🤖 Bot"
+            st.markdown(f"**{role_display}:** {msg.content}")
 
-# Process query
-if query:
-    with st.spinner("Processing..."):
-        results = vectordb.similarity_search_with_score(query, k=1)
-        if results:
-            doc, distance = results[0]
-            similarity = 1 - distance
-            st.markdown(f"*Similarity Score:* {similarity:.2f}")
-            if similarity > THRESHOLD:
-                st.success("✅ Answer from knowledge base:")
-                st.write(doc.page_content)
-            else:
-                st.warning("🤖 Not confident. Using LLM fallback...")
-                llm = load_llm()
-                response = llm.invoke(query)
-                st.markdown(f"*LLM Answer:* {response}")
-        else:
-            st.warning("📂 No relevant document. Using LLM fallback...")
-            llm = load_llm()
-            response = llm.invoke(query)
-            st.markdown(f"*LLM Answer:* {response}")
+    if query:
+        with st.spinner("Thinking..."):
+            try:
+                # create_retrieval_chain expects {"input": query}
+                response = qa_chain.invoke({"input": query})
+                
+                # Extract the answer from the response dictionary
+                if isinstance(response, dict) and "answer" in response:
+                    answer = response["answer"]
+                else:
+                    # Fallback if response format is unexpected
+                    answer = str(response)
+
+                st.success("✅ Gemini Answer:")
+                st.write(answer)
+
+                # Save to memory and database
+                memory.chat_memory.add_user_message(query)
+                memory.chat_memory.add_ai_message(answer)
+                save_chat(username, query, answer)
+
+                # Optional: Show source documents if available
+                if isinstance(response, dict) and "context" in response:
+                    with st.expander("📚 Source Documents"):
+                        for i, doc in enumerate(response["context"]):
+                            st.write(f"**Source {i+1}:**")
+                            # Show first 500 characters of each document
+                            content = doc.page_content if hasattr(doc, 'page_content') else str(doc)
+                            st.write(content[:500] + "..." if len(content) > 500 else content)
+                            
+                            # Show metadata if available
+                            if hasattr(doc, 'metadata') and doc.metadata:
+                                st.write(f"*Metadata: {doc.metadata}*")
+                            st.write("---")
+
+            except Exception as e:
+                st.error(f"❌ Error: {str(e)}")
+                # Optional: Show more detailed error for debugging
+                if st.checkbox("Show detailed error (for debugging)"):
+                    st.exception(e)
+
+    with st.sidebar:
+        st.markdown("## 🛠 Tools")
+        if role == "admin":
+            if st.button("📜 Admin Panel"):
+                admin_view()
+        if st.button("📤 Upload PDFs"):
+            upload_pdfs(username)
+        if st.button("🎯 Filter KB"):
+            semantic_filter()
+
+elif auth_status == False:
+    st.error("Invalid credentials")
+elif auth_status == None:
+    st.warning("Please enter your username and password")

@@ -1,6 +1,13 @@
 streamlit
 langchain
 langchain-community
-transformers
+langchain-google-vertexai
+google-cloud-aiplatform
+vertexai
+firebase-admin
+streamlit-authenticator
 sentence-transformers
-faiss-cpu
+PyPDF2
+chromadb
+google-generativeai
+langchain-google-genai
