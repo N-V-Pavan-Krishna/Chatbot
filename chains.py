@@ -18,7 +18,7 @@ def build_qa_chain():
             raise Exception("Vector database not initialized.")
         
         # Set your API key
-        os.environ["GOOGLE_API_KEY"] = "AIzaSyDDwYrpyEP1c23k-BQFyIIaa_jq8Wk6DrQ"
+        os.environ["GOOGLE_API_KEY"] = "<your_api_key>"
 
         # Configure genai
         genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
